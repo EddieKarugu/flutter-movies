@@ -10,7 +10,7 @@ class CastContainer extends StatelessWidget {
       children: [
       SizedBox(
         height: 70,
-          child: Image.network('https://image.tmdb.org/t/p/original/${character['profile_path']}')),
+          child: Image.network('https://image.tmdb.org/t/p/w500${character['profile_path']}')),
         Text(character['name']),
         Text(character['character']),
       ],

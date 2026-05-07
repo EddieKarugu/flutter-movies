@@ -18,7 +18,7 @@ class ReviewContainer extends StatelessWidget {
       leading: CircleAvatar(
         radius: 30,
         backgroundImage: NetworkImage(
-          'https://image.tmdb.org/t/p/original/${review['author_details']['avatar_path']}',
+          'https://image.tmdb.org/t/p/w500${review['author_details']['avatar_path']}',
         ),
       ),
     );

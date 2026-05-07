@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:phanmovies/widgets/review_container.dart';
-
 import '../apis/tmdb_api.dart';
 import '../widgets/cast_container.dart';
 import '../widgets/movie_container.dart';
@@ -16,24 +15,28 @@ class MovieDetails extends StatefulWidget {
 class _MovieDetailsState extends State<MovieDetails> {
   @override
   Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width <= 400;
+    final isTabletScreen = size.width > 400 && size.width <= 900;
+    final isWidescreen = size.width > 900;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FittedBox(
-                child: Text(
-                  widget.movie['title'],
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              Text(
+                widget.movie['title'],
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               SizedBox(
                 height: 200,
                 child: Image.network(
-                  'https://image.tmdb.org/t/p/original/${widget.movie['poster_path']}',
+                  'https://image.tmdb.org/t/p/w500${widget.movie['poster_path']}',
                 ),
               ),
               Text(widget.movie['vote_average'].toString()),
@@ -115,10 +118,10 @@ class _MovieDetailsState extends State<MovieDetails> {
                       final movies = snapshot.data['results'];
                       return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
+                            crossAxisCount: isSmallScreen ? 2 : isTabletScreen ? 4 : 7,
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
-                            childAspectRatio: 1.2
+                            childAspectRatio: isSmallScreen? 1 : isTabletScreen? .8: .9
 
                         ),
                         itemBuilder: (context, index) {

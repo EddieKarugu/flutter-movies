@@ -18,31 +18,36 @@ class _MovieContainerState extends State<MovieContainer> {
         image: DecorationImage(
           fit: BoxFit.cover,
           image: NetworkImage(
-            'https://image.tmdb.org/t/p/original/${widget.movie['poster_path']}',
+            'https://image.tmdb.org/t/p/w500${widget.movie['poster_path']}',
             scale: 1.0,
           ),
         ),
-        border: Border.all(color: Color(0xff0000ff)),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FittedBox(
-            child: Text(
-              widget.movie['title'],
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 28
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          Text(
+            widget.movie['title'],
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Theme.of(context).colorScheme.onSurface
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(widget.movie['release_date']),
-              Text(widget.movie['vote_average'].toString()),
+              Row(
+                children: [
+                  Icon(Icons.star, size: 20, color: Colors.amber,),
+                  Text(widget.movie['vote_average'].toStringAsFixed(1)),
+                ],
+              ),
             ],
           ),
           Text(

@@ -29,6 +29,11 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width <= 400;
+    final isTabletScreen = size.width > 400 && size.width <= 900;
+    final isWidescreen = size.width > 900;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -75,9 +80,10 @@ class _HomepageState extends State<Homepage> {
 
                     return GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
+                        crossAxisCount: isSmallScreen ? 2 : isTabletScreen ? 4 : 7,
                         mainAxisSpacing: 10,
                         crossAxisSpacing: 10,
+                        childAspectRatio: isSmallScreen? 1: isTabletScreen? .8 : .9
 
                       ),
                       itemBuilder: (context, index) {
