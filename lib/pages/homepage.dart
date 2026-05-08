@@ -67,7 +67,7 @@ class _HomepageState extends State<Homepage> {
               child: FutureBuilder(
                 future: TmdbApi().getMovies(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == 'waiting') {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(
                       child: CircularProgressIndicator(
                         color: Color(0xff0000ff),

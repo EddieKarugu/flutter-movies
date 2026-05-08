@@ -97,4 +97,18 @@ class TmdbApi{
       throw Exception('Failed to load movies');
     }
   }
+
+  Future<dynamic> getMovieTrailer(int movieId) async{
+    final url = Uri.parse('$baseUrl/movie/$movieId/videos?api_key=$apiKey');
+    final response = await http.get(url);
+
+    if(response.statusCode == 200){
+      final data = jsonDecode(response.body);
+      final trailer = data['results'].firstWhere((video) => video['type'] == 'Trailer', orElse: () => null);
+      return trailer;
+    }
+    else{
+      throw Exception('Failed to load Trailer');
+    }
+  }
 }

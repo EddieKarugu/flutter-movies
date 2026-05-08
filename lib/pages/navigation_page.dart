@@ -39,6 +39,11 @@ class _NavigationPageState extends State<NavigationPage> {
     final isWidescreen = size.width > 600;
 
     return Scaffold(
+      appBar: isWidescreen? AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        shadowColor: Colors.transparent,
+      ):null,
       drawer: !isWidescreen
           ? null
           : Drawer(
