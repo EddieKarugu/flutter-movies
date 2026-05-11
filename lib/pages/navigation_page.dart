@@ -11,7 +11,7 @@ class NavigationPage extends StatefulWidget {
 
 class _NavigationPageState extends State<NavigationPage> {
   final List<Widget> _pages = [
-    Homepage(),
+    HomePage(),
     Text('Search'),
     Text('Downloads'),
     Text('Account'),
@@ -47,6 +47,7 @@ class _NavigationPageState extends State<NavigationPage> {
       drawer: !isWidescreen
           ? null
           : Drawer(
+        backgroundColor: Theme.of(context).colorScheme.surface,
               child: Column(
                 children: [
                   const Spacer(),

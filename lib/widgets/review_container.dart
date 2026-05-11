@@ -6,19 +6,41 @@ class ReviewContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(review['author']),
-          Text('Rating: ${review['author_details']['rating']}'),
-        ],
-      ),
-      subtitle: Text(review['content'], maxLines: 2, overflow: TextOverflow.ellipsis,),
-      leading: CircleAvatar(
-        radius: 30,
-        backgroundImage: NetworkImage(
-          'https://image.tmdb.org/t/p/w500${review['author_details']['avatar_path']}',
+    final author = review['author'] ?? 'Anonymous';
+    final content = review['content'] ?? 'No content';
+    final rating = review['author_details']?['rating'] as double?;
+
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+      child: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const CircleAvatar(
+                  child: Icon(Icons.person, size: 18),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  author,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                if (rating != null) ...[
+                  const SizedBox(width: 12),
+                  Row(
+                    children: [
+                      const Icon(Icons.star, size: 16, color: Colors.amber),
+                      Text(' $rating'),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(content, style: TextStyle(fontSize: 12),),
+          ],
         ),
       ),
     );

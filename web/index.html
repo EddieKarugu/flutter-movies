@@ -1,38 +1,176 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
+    <!--
+      If you are serving your web app in a path other than the root, change the
+      href value below to reflect the base path you are serving from.
 
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
+      The path provided below has to start and end with a slash "/" in order for
+      it to work correctly.
 
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+      For more details:
+      * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
 
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="$FLUTTER_BASE_HREF">
+      This is a placeholder for base href that will be replaced by the value of
+      the `--base-href` argument provided to `flutter build`.
+    -->
+    <base href="$FLUTTER_BASE_HREF">
 
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+    <meta charset="UTF-8">
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+    <meta name="description" content="A new Flutter project.">
 
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="phanmovies">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+    <!-- iOS meta tags & icons -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="ecomm">
+    <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>phanmovies</title>
-  <link rel="manifest" href="manifest.json">
+    <title>phanmovies</title>
+    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+<script>
+    // BLOCK ALL POPUPS AND REDIRECTS WITHOUT USING SANDBOX
+    (function() {
+      // 1. Block window.open (popup ads)
+      const originalOpen = window.open;
+      window.open = function(...args) {
+        console.warn("[Ad Blocker] Blocked window.open:", args[0]);
+        // Return a dummy window object to avoid JS errors
+        return { closed: true, close: function() {}, focus: function() {} };
+      };
+
+      // 2. Block location.replace and location.assign
+      window.location.replace = function(url) {
+        console.warn("[Ad Blocker] Blocked location.replace:", url);
+        // Do nothing
+      };
+      window.location.assign = function(url) {
+        console.warn("[Ad Blocker] Blocked location.assign:", url);
+      };
+
+      // 3. Prevent setting window.location.href (only if it's a full navigation)
+      // We override the property descriptor
+      let originalHref = window.location.href;
+      Object.defineProperty(window.location, 'href', {
+        get: function() { return originalHref; },
+        set: function(value) {
+          console.warn("[Ad Blocker] Blocked setting location.href to:", value);
+          // Do not actually navigate
+        }
+      });
+
+      // 4. Block click events on links that try to navigate
+      document.addEventListener('click', function(e) {
+        let target = e.target;
+        while (target && target !== document) {
+          if (target.tagName === 'A' && target.href) {
+            const href = target.href;
+            // Allow only same-origin or hash links? Better to block all external?
+            // For movie ads, they usually point to external ad sites.
+            if (!href.startsWith(window.location.origin) &&
+                !href.startsWith('#') &&
+                !href.startsWith('javascript:')) {
+              console.warn("[Ad Blocker] Blocked link click:", href);
+              e.preventDefault();
+              e.stopPropagation();
+              return false;
+            }
+          }
+          target = target.parentElement;
+        }
+      }, true);
+
+      // 5. Prevent beforeunload (optional: warn user)
+      window.addEventListener('beforeunload', function(e) {
+        // If an ad tries to unload the page, this gives user a chance to stay
+        e.preventDefault();
+        e.returnValue = 'An ad tried to leave this page. Do you want to stay?';
+      });
+
+      console.log("[Ad Blocker] Active – popups and redirects blocked");
+    })();
+</script>
+<script>
+    class DivPlaceholder extends HTMLElement {
+      connectedCallback() {
+        // Create a container div
+        this.innerHTML = '<div id="videasy-container" style="width:100%; height:100%;"></div>';
+        const src = this.getAttribute('data-src');
+        if (src) this._createIframe(src);
+      }
+
+      static get observedAttributes() { return ['data-src']; }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'data-src' && newValue) {
+          this._createIframe(newValue);
+        }
+      }
+
+      _createIframe(src) {
+        const container = this.querySelector('#videasy-container');
+        if (container) {
+          container.innerHTML = `
+            <iframe src="${src}"
+                    style="width:100%; height:100%; border:none;"
+                    allowfullscreen>
+            </iframe>
+          `;
+        }
+      }
+    }
+    customElements.define('div-placeholder', DivPlaceholder);
+</script>
+
+<!-- Custom element for Videasy iframe without sandbox -->
+<script>
+    class VideasyPlayer extends HTMLElement {
+   // ... (other methods unchanged) ...
+
+   _createIframe(src) {
+     const iframe = document.createElement('iframe');
+     iframe.src = src;
+     iframe.style.width = '100%';
+     iframe.style.height = '100%';
+     iframe.style.border = 'none';
+     iframe.allowFullscreen = true;
+
+     // Add the most restrictive sandbox that still allows video to work
+     // ⚠️ Remove 'allow-popups' and 'allow-top-navigation' entirely
+     // 'allow-same-origin' is often needed for video streaming cookies
+     // 'allow-scripts' is required for the player's JavaScript
+     // 'allow-presentation' allows fullscreen presentation API
+     iframe.sandbox = 'allow-scripts allow-same-origin allow-presentation';
+
+     // Also try to limit which permissions are granted via the 'allow' attribute
+     iframe.allow = 'autoplay; fullscreen; encrypted-media';
+
+     this.shadowRoot.appendChild(iframe);
+   }
+ }
+</script>
+
+
+<script src="flutter.js" defer></script>
+<script src="/assets/packages/flutter_inappwebview_web/assets/web/web_support.js" defer></script>
+
+<script>
+    // Flutter bootstrapping code
+    window.addEventListener('load', function(ev) {
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: { serviceWorkerVersion: null }
+      }).then(function(engineInitializer) {
+        return engineInitializer.initializeEngine();
+      }).then(function(appRunner) {
+        return appRunner.runApp();
+      });
+    });
+</script>
+
 </body>
 </html>

@@ -6,14 +6,44 @@ class CastContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-      SizedBox(
-        height: 70,
-          child: Image.network('https://image.tmdb.org/t/p/w500${character['profile_path']}')),
-        Text(character['name']),
-        Text(character['character']),
-      ],
+    final profilePath = character['profile_path'];
+    final imageUrl = profilePath != null
+        ? 'https://image.tmdb.org/t/p/w200$profilePath'
+        : null;
+
+    return SizedBox(
+      width: 80,
+      child: Column(
+        children: [
+          ClipOval(
+            child: imageUrl != null
+                ? Image.network(
+              imageUrl,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+              const Icon(Icons.person, size: 70),
+            )
+                : const Icon(Icons.person, size: 70),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            character['name'] ?? 'Unknown',
+            style: const TextStyle(fontSize: 12),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+          Text(
+            character['character'] ?? '',
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
